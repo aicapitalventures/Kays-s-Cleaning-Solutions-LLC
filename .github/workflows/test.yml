@@ -1,0 +1,21 @@
+# Sprint 01 — Continuous integration
+# Systems Architecture & Development: Elijah L. Cooley | Divinityx Enterprises, LLC.
+name: Sprint 01 tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  node-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test local API and owner CRM
+        run: npm test
