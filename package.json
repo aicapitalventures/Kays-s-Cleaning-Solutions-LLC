@@ -1,0 +1,6 @@
+{
+  "name":"kcs-sprint-01","version":"1.0.0","private":true,"type":"module",
+  "description":"Kay's Cleaning Solutions prelaunch CRM — systems architecture by Elijah L. Cooley / Divinityx Enterprises, LLC",
+  "scripts":{"start":"node server/app.js","test":"node --test tests/*.test.js"},
+  "engines":{"node":">=22.13.0"}
+}
