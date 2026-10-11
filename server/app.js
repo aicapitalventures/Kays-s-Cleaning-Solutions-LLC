@@ -7,11 +7,13 @@ import {randomBytes} from 'node:crypto';
 import {DatabaseSync} from 'node:sqlite';
 import {validateLead, passwordHash, checkPassword, sign, secureCompare, STATUSES} from './core.js';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const PORT=Number(process.env.PORT||3000), SESSION_SECRET=process.env.SESSION_SECRET||'';
+const PORT=Number(process.env.PORT||3000), HOST=process.env.HOST||'127.0.0.1', SESSION_SECRET=process.env.SESSION_SECRET||'';
 const OWNER_PASSWORD=process.env.OWNER_PASSWORD||'', INTAKE_ENABLED=process.env.INTAKE_ENABLED==='true';
 const PROD=process.env.NODE_ENV==='production';
+const STAGING=process.env.KCS_STAGING==='true';
 if(SESSION_SECRET.length<32||OWNER_PASSWORD.length<12){console.error('Set SESSION_SECRET (32+ characters) and OWNER_PASSWORD (12+ characters)');process.exit(1);}
 if(PROD&&(!process.env.PUBLIC_ORIGIN||!process.env.PUBLIC_ORIGIN.startsWith('https://'))){console.error('HTTPS PUBLIC_ORIGIN required in production');process.exit(1);}
+if(STAGING&&INTAKE_ENABLED){console.error('Staging forbids enabled customer intake');process.exit(1);}
 if(PROD&&INTAKE_ENABLED&&process.env.KCS_RELEASE_APPROVED!=='true'){console.error('Production intake requires explicit KCS_RELEASE_APPROVED=true after launch review');process.exit(1);}
 const DB_FILE=process.env.DATABASE_PATH||path.join(root,'kcs.sqlite');
 fs.mkdirSync(path.dirname(path.resolve(DB_FILE)),{recursive:true});
@@ -81,4 +83,4 @@ try {
  return reply(res,404,{error:'Not found'});
 }catch(e){if(e instanceof SyntaxError)return reply(res,400,{error:'Invalid JSON'});if(/Invalid request|Please provide|Privacy acknowledgment|Request too large/.test(e.message))return reply(res,400,{error:e.message});console.error('Request failed:',e.message);return reply(res,500,{error:'Request could not be completed'});}
 });
-server.listen(PORT,()=>console.log(`KCS Sprint 01 on port ${PORT}; intake ${INTAKE_ENABLED?'ENABLED':'DISABLED'}`));
+server.listen(PORT,HOST,()=>console.log(`KCS on ${HOST}:${PORT}; intake ${INTAKE_ENABLED?'ENABLED':'DISABLED'}`));
