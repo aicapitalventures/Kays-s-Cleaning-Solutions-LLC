@@ -1,0 +1,26 @@
+# Example only — do not install without reviewing paths, permissions and runtime
+# Systems Architecture & Development: Elijah L. Cooley | Divinityx Enterprises, LLC.
+[Unit]
+Description=Kay's Cleaning Solutions private staging
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=kcs
+Group=kcs
+WorkingDirectory=/opt/kcs
+EnvironmentFile=/etc/kcs/staging.env
+ExecStart=/usr/bin/node /opt/kcs/server/app.js
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/kcs
+UMask=0077
+# Service must listen on loopback through a non-public proxy or tunnel, not an internet-exposed host port.
+
+[Install]
+WantedBy=multi-user.target
